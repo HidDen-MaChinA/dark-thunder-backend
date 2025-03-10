@@ -6,12 +6,11 @@ use App\Http\Mappers\User\GetUserMapper;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Http\Request;
 
 class Authentification extends BaseController
 {
-    use AuthorizesRequests, ValidatesRequests, HasUuids;
+    use AuthorizesRequests, ValidatesRequests;
     public function __construct(public GetUserMapper $getUserMapper) { }
 
     public function login(Request $request){
