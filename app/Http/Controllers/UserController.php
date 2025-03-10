@@ -15,6 +15,16 @@ class UserController extends BaseController
     public function __construct(
         public UserService $userService
     ) {}
+
+    public function quit(Request $request){
+        $userPayload = $request->validate([
+            "regex:\<|>\g",
+            "email" => "email, required",
+            "password" => "password, required"
+        ]);
+        return response()->json(["done" => $this->userService->quit($userPayload["password"], $userPayload["email"])]);
+    }
+
     public function crupdate(Request $request)
     {
         $userPayload = $request->validate([

@@ -18,8 +18,18 @@ class UserService{
     public function update(CrupdateUser $crupdateUser){
         $authentified = auth()->attempt(["email"=>$crupdateUser->email, "password"=>$crupdateUser->password]);
         if($authentified){
-        $toSave = $this->userMapper->DTOCrupdateUserToEntity($crupdateUser);
-        return $toSave->update();
+            $toSave = $this->userMapper->DTOCrupdateUserToEntity($crupdateUser);
+            return $toSave->update();
+        }
+    }
+
+    public function quit(string $password, string $email){
+        $authentified = auth()->attempt(["email" => $email, "password" => $password]);
+        if($authentified){
+            $currentUser = auth()->user();
+            return $currentUser->save(["quit"=>true]);
+        }else{
+            return false;
         }
     }
 }
