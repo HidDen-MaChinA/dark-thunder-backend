@@ -4,7 +4,7 @@ namespace App\Http\DTOs\User;
 
 class CrupdateUser {
     public function __construct(
-        public string $id,
+        public string | null $id,
         public string $firstname,
         public string $lastname,
         public string $username,
