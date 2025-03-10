@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Mappers\User\GetUserMapper;
+use App\Http\Mappers\UserMapper;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
 
-class Authentification extends BaseController
+class AuthentificationController extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
-    public function __construct(public GetUserMapper $getUserMapper) { }
+    public function __construct(public UserMapper $userMapper) { }
 
     public function login(Request $request){
         $userLogin = $request->validate([
@@ -28,7 +28,7 @@ class Authentification extends BaseController
     }
 
     public function whoami(Request $request){
-        return response()->json($this->getUserMapper->entityToDTO($request->user()));
+        return response()->json($this->userMapper->entityToDTOGetUserGetUser($request->user()));
     }
 
     public function logout(Request $request){
