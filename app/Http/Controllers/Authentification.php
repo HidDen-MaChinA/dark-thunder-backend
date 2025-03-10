@@ -12,10 +12,7 @@ use Illuminate\Http\Request;
 class Authentification extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests, HasUuids;
-    public function __construct(public GetUserMapper $getUserMapper)
-    {
-
-    }
+    public function __construct(public GetUserMapper $getUserMapper) { }
 
     public function login(Request $request){
         $userLogin = $request->validate([
@@ -29,5 +26,17 @@ class Authentification extends BaseController
         }else{
             return response()->json(["error" => "user not found"], 404);
         }
+    }
+
+    public function whoami(Request $request){
+        return response()->json($this->getUserMapper->entityToDTO($request->user()));
+    }
+
+    public function logout(Request $request){
+        $request->user()->tokens()->delete();
+
+        return response()->json([
+            'message' => 'Logged out successfully'
+        ]);
     }
 }
