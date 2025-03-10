@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Http\Mappers\User\GetUserMapper;
+use App\Http\Mappers\User\UserMapper;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -12,8 +12,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(GetUserMapper::class, function($app){
-            return new GetUserMapper();
+        $this->app->bind(UserMapper::class, function($app){
+            return new UserMapper();
         });
     }
 
