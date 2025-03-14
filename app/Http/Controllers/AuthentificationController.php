@@ -15,13 +15,17 @@ class AuthentificationController extends BaseController
     public function __construct(public UserMapper $userMapper) { }
 
     public function login(Request $request){
-        $userLogin = $request->validate([
-            "email"=>"regex:\<|>\g, email",
-            "password"=>"password, regex:\<|>\g"
+        $userLogin = $request->only([
+            "email",
+            "password"
         ]);
+
         $authentified = auth()->attempt($userLogin);
         if($authentified){
             $currentUser = auth()->user();
+            if($currentUser->quit){
+                return response()->json(["reason"=>"The user login" . $currentUser->username . " you entered have already quit the application"], 403);
+            }
             return response()->json(["token"=> $currentUser->createToken($userLogin['email'] . $currentUser->getAuthIdentifier() . "_token")]);
         }else{
             return response()->json(["error" => "user not found"], 404);
@@ -29,7 +33,7 @@ class AuthentificationController extends BaseController
     }
 
     public function whoami(Request $request){
-        return response()->json($this->userMapper->entityToDTOGetUserGetUser($request->user()));
+        return response()->json($this->userMapper->entityToDTOGetUser($request->user()));
     }
 
     public function logout(Request $request){

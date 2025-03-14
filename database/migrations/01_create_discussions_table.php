@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('discussions', function (Blueprint $table) {
-            $table->id()->type(SQL_VARCHAR);
+            $table->uuid('id')->primary();
             $table->text("name");
             $table->text("creator_id");
             $table->string("message_restriction_regex");

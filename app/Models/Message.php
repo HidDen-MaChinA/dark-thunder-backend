@@ -25,4 +25,6 @@ class Message extends Model
         'discussion_id'
     ];
 
+    protected $name = "discussions_messages";
+
 }

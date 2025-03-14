@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('messages', function (Blueprint $table) {
-            $table->uuid()->id();
-            $table->longText("value");
-            $table->foreignUuid('user_id')->constrained("users", "id");
-            $table->foreignUuid('discussion_id')->constrained("discussions", "id");
+        Schema::create('emails', function (Blueprint $table) {
+            $table->string("email", 100)->primary()->unique();
+            $table->dateTime("verfied_at")->nullable();
+            $table->text("verification_code")->nullable();
+            $table->dateTime("verification_count_down")->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('messages');
+        Schema::dropIfExists('emails');
     }
 };
