@@ -12,10 +12,14 @@ class Email extends Model
     protected $fillable = [
         'email',
         'verification_code',
-        'verification_count_down'
+        'verification_count_down',
+        'verified_at'
     ];
+
+    protected $primaryKey = "email";
 
     protected $hidden= [
         'verified_at',
     ];
+
 }

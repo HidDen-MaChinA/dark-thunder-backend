@@ -19,17 +19,17 @@ class EmailController extends Controller
             "email" => "email"
         ])["email"];
 
-        return $this->emailService->sendVerificationCode($email);
+        return ["verificationCountDown" => $this->emailService->sendVerificationCode($email)];
     }
 
     public function verifyEmail(Request $request){
         $requestBody = $request->validate([
-            "verification_code" => "regex:\^[0-9]{6,6}$\g|required",
+            "verification_code" => ["regex:/^[0-9]{6,6}$/u","required"],
             "email"=>"email|required",
             "verification_count_down" => "required"
         ]);
 
-        return $this->emailService->verifyEmail($requestBody["verification_code"], $requestBody["email"], $requestBody["verification_count_down"]);
+        return ["verifiedAt" => $this->emailService->verifyEmail($requestBody["verification_code"], $requestBody["email"], $requestBody["verification_count_down"])];
     }
 
 }

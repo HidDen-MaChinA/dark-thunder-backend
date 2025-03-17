@@ -11,7 +11,7 @@ class CrupdateUser {
         public string $lastname,
         public string $username,
         public string $birthdate,
-        public string $pfp,
+        public string | null $pfp,
         public string $email,
         public string $password
     ){ }

@@ -8,7 +8,6 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\Date;
 
 class UserController extends BaseController
 {
@@ -26,11 +25,35 @@ class UserController extends BaseController
         return response()->json(["done" => $this->userService->quit($userPayload["password"], $userPayload["email"])]);
     }
 
-    public function crupdate(Request $request)
+    public function create(Request $request)
     {
         $userPayload = $request->validate([
             "regex:\<|>\g",
-            "id" => "nullable",
+            "firstname" => "required",
+            "lastname" => "required",
+            "username" => "required",
+            "birthdate" => "date",
+            "pfp" => "nullable",
+            "email" => "email|required",
+            "password" => "required",
+        ]);
+        $crupdateUser = new CrupdateUser(
+            null,
+            $userPayload["firstname"],
+            $userPayload["lastname"],
+            $userPayload["username"],
+            $userPayload["birthdate"],
+            isset($userPayload["pfp"]) ? $userPayload["pfp"] : null,
+            $userPayload["email"],
+            $userPayload["password"],
+        );
+        $this->userService->create($crupdateUser) ?  response()->json(["status" => "user created"]) : response()->json(["status" => "user could not be created"]);
+    }
+    public function update(Request $request)
+    {
+        $userPayload = $request->validate([
+            "regex:\<|>\g",
+            "id" => "required",
             "firstname" => "required",
             "lastname" => "required",
             "username" => "required",
@@ -40,7 +63,7 @@ class UserController extends BaseController
             "password" => "required"
         ]);
         $crupdateUser = new CrupdateUser(
-            null,
+            $userPayload["id"],
             $userPayload["firstname"],
             $userPayload["lastname"],
             $userPayload["username"],
@@ -49,13 +72,6 @@ class UserController extends BaseController
             $userPayload["email"],
             $userPayload["password"],
         );
-        if(isset($userPayload["id"])){
-            $crupdateUser->id=$userPayload["id"];
-        }
-        if ($crupdateUser->id != null) {
-            $this->userService->update($crupdateUser) ? response()->json(["status" => "user updated"]) : response()->json(["status" => "user could not be updated"]);
-        } else {
-            $this->userService->create($crupdateUser) ?  response()->json(["status" => "user created"]) : response()->json(["status" => "user could not be created"]);
-        }
+        $this->userService->update($crupdateUser) ? response()->json(["status" => "user updated"]) : response()->json(["status" => "user could not be updated"]);
     }
 }

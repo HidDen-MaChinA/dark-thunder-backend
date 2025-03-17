@@ -6,7 +6,7 @@ use App\Http\DTOs\User\CrupdateUser;
 use App\Http\Mappers\UserMapper;
 use App\Models\Email;
 use App\Models\User;
-
+use DateTime;
 use exception;
 
 class UserService{
@@ -20,7 +20,8 @@ class UserService{
             throw new exception("email not verified");
         }
         $toSave = $this->userMapper->DTOCrupdateUserToEntity($crupdateUser);
-        return $toSave->save();
+        $toSave->save();
+        return $toSave;
     }
 
     public function update(CrupdateUser $crupdateUser){
@@ -32,6 +33,7 @@ class UserService{
             $toSave = $this->userMapper->DTOCrupdateUserToEntity($crupdateUser);
             return $toSave->update();
         }
+        return false;
     }
 
     public function quit(string $password, string $email){
@@ -47,6 +49,12 @@ class UserService{
 
     private function isEmailVerified($email){
         $subject = $this->emailModel->all(["verified_at"])->where("email", $email)->get(0);
-        return isset($subject);
+        if(isset($subject)){
+            $dateDiff = now()->toDateTime()->diff(new DateTime($subject["verified_at"]));
+            if($dateDiff->h > 2){
+                return false;
+            }
+        }
+        return true;
     }
 }
