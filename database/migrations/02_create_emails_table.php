@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('emails', function (Blueprint $table) {
             $table->string("email", 100)->primary()->unique();
-            $table->dateTime("verfied_at")->nullable();
+            $table->dateTime("verified_at")->nullable();
             $table->text("verification_code")->nullable();
             $table->dateTime("verification_count_down")->nullable();
             $table->timestamps();

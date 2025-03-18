@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('discussions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->text("name");
-            $table->text("creator_id");
-            $table->string("message_restriction_regex");
+            $table->uuid("creator_id");
+            $table->foreign("creator_id")->references("id")->on("users");
+            $table->string("message_restriction_regex")->nullable();
             $table->datetimes();
         });
     }

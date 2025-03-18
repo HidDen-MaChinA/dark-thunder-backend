@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('firstname');
             $table->string('lastname');
             $table->date('birthdate');
-            $table->longText('pfp');
+            $table->longText('pfp')->nullable();
             $table->string('username');
-            $table->string('email')->unique();
+            $table->string('email', 100)->unique();
             $table->foreign('email')->references('email')->on("emails")->onDelete("cascade");
             $table->string('password');
             $table->rememberToken();

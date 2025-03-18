@@ -11,14 +11,6 @@ class Discussion extends Model
 {
     use HasFactory, HasUuids;
 
-    public function members() : HasMany{
-        return $this->hasMany(User::class,"id");
-    }
-
-    public function messages() : HasMany{
-        return $this->hasMany(Message::class,"id");
-    }
-
     protected $fillable = [
         'name',
         'messages_restriction_regex',
