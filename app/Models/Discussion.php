@@ -11,7 +11,12 @@ class Discussion extends Model
 {
     use HasFactory, HasUuids;
 
+    public function mods() {
+        return $this->hasMany(DiscussionsMembership::class, "discussion_id", "id")->getQuery()->where('permission', 3)->get();
+    }
+
     protected $fillable = [
+        'id',
         'name',
         'messages_restriction_regex',
         'creator_id',

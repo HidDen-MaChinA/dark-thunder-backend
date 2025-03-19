@@ -12,16 +12,17 @@ class DiscussionsMembership extends Model
     use HasFactory, HasUuids;
 
     public function discussion() : HasOne{
-        return $this->hasone(Discussion::class, "id");
+        return $this->hasOne(Discussion::class, "id", "discussion_id");
     }
 
     public function user() : HasOne{
-        return $this->hasone(User::class, "id");
+        return $this->hasOne(User::class, "id", "user_id");
     }
 
     protected $fillable = [
-        'user',
-        'discussion',
+        'id',
+        'user_id',
+        'discussion_id',
         'add_date',
         'permission',
     ];

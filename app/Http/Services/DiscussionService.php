@@ -2,25 +2,51 @@
 
 namespace App\Http\Services;
 
+use App\Http\DTOs\User\GetUser;
 use App\Models\Discussion;
 
-use function Termwind\terminal;
+use exception;
 
 class DiscussionService{
-    public function __construct() { }
-    public function crupdateDiscussion(string $name, string $creator_id, string | null $id, string | null $messageRestrictionRegex)
+    public function __construct(
+        private DiscussionMembershipService $discussionMembershipService
+    ) { }
+    public function createDiscussion(string $name, string | null $messageRestrictionRegex){
+        $currentUser = auth()->user();
+        $usedId = uuid_create();
+        $toSave = new Discussion([
+            'id' => $usedId,
+            'name' => $name,
+            'creator_id' => $currentUser->id,
+            'message_restriction_regex' => $messageRestrictionRegex
+        ]);
+        $toSave->save();
+        $this->discussionMembershipService->createDiscussionMembership($usedId, $currentUser->id, 'mod');
+        return $toSave;
+    }
+
+    public function updateDiscussion(string $name, string $id, string | null $messageRestrictionRegex)
     {
-        $usedId = $id || uuid_create();
-        Discussion::query()->updateOrCreate(
+        return Discussion::query()->where('id', $id)->update(
             [
-                "id" => $usedId,
+                "message_restriction_regex" => $messageRestrictionRegex,
                 "name" => $name
-            ],[
-                "creator_id" => $creator_id,
-                "message_restriction_regex" => $messageRestrictionRegex
             ]
         );
-        return $name;
+    }
+
+    public function createDiscussionWithAnotherUser(GetUser $user){
+        $currentUser = auth()->user();
+        $newdiscussionId = uuid_create();
+        $toSave = new Discussion([
+            'id' => $newdiscussionId,
+            'name' => $user->username . ", " . $currentUser->username,
+            'creator_id' => $currentUser->id
+        ]);
+        $toSave->save();
+        $this->discussionMembershipService->createDiscussionMembership($newdiscussionId,$currentUser->id, 'mod');
+        $this->discussionMembershipService->createDiscussionMembership($newdiscussionId,$user->id, 'mod');
+        return $toSave;
     }
 
     public function findAllDiscussionsCreated($creatorId, $page){
