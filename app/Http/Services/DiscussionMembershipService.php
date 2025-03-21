@@ -43,18 +43,16 @@ class DiscussionMembershipService{
     }
 
     public function findAllDiscussionUserIsIn($page){
-        $baseNumber = $page <= 0 ? 20 : $page * 20;
         $currentUser = auth()->user();
-        $result = DiscussionsMembership::query()->where("user_id", $currentUser->id)->get();
-        return $result->range($baseNumber - 19, $baseNumber)->map(function (DiscussionsMembership $value){
+        $result = DiscussionsMembership::query()->where("user_id", $currentUser->id)->paginate(20,null, null,$page);
+        return collect($result->items())->map(function (DiscussionsMembership $value){
             return $value->discussion;
         });
     }
 
     public function findAllDiscussionMembers($discussionId,$page){
-        $baseNumber = $page <= 0 ? 20 : $page * 20;
-        $result = DiscussionsMembership::query()->where("discussion_id", $discussionId)->get();
-        return $result->range($baseNumber - 19, $baseNumber)->map(function (DiscussionsMembership $value){
+        $result = DiscussionsMembership::query()->where("discussion_id", $discussionId)->paginate(20, null, null,$page);
+        return collect($result->items())->map(function (DiscussionsMembership $value){
             return $value->user;
         });
     }

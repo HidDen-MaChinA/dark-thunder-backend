@@ -49,7 +49,6 @@ class DiscussionService{
 
     public function findAllDiscussionsCreated($page){
         $creatorId = auth()->user()->id;
-        $baseNumber = $page <= 0 ? 10 : $page * 10;
-        return Discussion::query()->get()->where("creator_id", $creatorId)->range($baseNumber - 9, $baseNumber);
+        return Discussion::query()->where("creator_id", $creatorId)->paginate(15, null, null, $page);
     }
 }
