@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthentificationController;
+use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -16,17 +17,26 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function (){
     Route::post('/auth/whoami', [AuthentificationController::class, 'whoami']);
     Route::post('/auth/logout', [AuthentificationController::class, 'logout']);
-});
-
-Route::middleware('auth:sanctum')->group(function (){
+    Route::post('/user/update', [UserController::class, 'update']);
     Route::post('/user/quit', [UserController::class, 'quit']);
+
+    //DiscussionController part
+    Route::post('/discussion/create', [DiscussionController::class, 'createDiscussion']);
+    Route::post('/discussion/update', [DiscussionController::class, 'updateDiscussion']);
+    Route::post('/discussion/create/user', [DiscussionController::class, 'createDiscussionWithAnotherUser']);
+    Route::get('/discussions/created', [DiscussionController::class, 'findAllDiscussionsCreated']);
+
+    //DiscussionsMembershipController part
+    Route::post('/discussion/member/create', [DiscussionsMembershipController::class, 'createDiscussionMembership']);
+    Route::post('/discussion/member/permission/update', [DiscussionsMembershipController::class, 'updateDiscussionMembershipPermission']);
+    Route::get('/discussion/members', [DiscussionsMembershipController::class, 'findAllMembersOfDiscussion']);
+    Route::get('/discussions/member', [DiscussionsMembershipController::class, 'findAllDiscussionCurrentUserIsIn']);
 });
 
 
 Route::middleware('guest')->middleware('remove-cors')->group(function(){
-    Route::get('/user', [UserController::class, 'findAll']);
-    Route::get('/auth/email/sendVerificationCode', [EmailController::class, 'sendVerificationCode']);
-    Route::get('/auth/email/verify', [EmailController::class, 'verifyEmail']);
-    Route::post('/user/crupdate', [UserController::class, 'crupdate']);
-    Route::post('/auth/login', [AuthentificationController::class, 'login']);
+    Route::post('/guest/email/sendVerificationCode', [EmailController::class, 'sendVerificationCode']);
+    Route::post('/guest/email/verify', [EmailController::class, 'verifyEmail']);
+    Route::post('/guest/user/create', [UserController::class, 'create']);
+    Route::post('/guest/auth/login', [AuthentificationController::class, 'login']);
 });
