@@ -2,9 +2,7 @@
 
 namespace App\Http\Services;
 
-use App\Http\DTOs\User\GetUser;
 use App\Models\Discussion;
-
 use exception;
 
 class DiscussionService{
@@ -35,21 +33,22 @@ class DiscussionService{
         );
     }
 
-    public function createDiscussionWithAnotherUser(GetUser $user){
+    public function createDiscussionWithAnotherUser($userId, $discussionName){
         $currentUser = auth()->user();
         $newdiscussionId = uuid_create();
         $toSave = new Discussion([
             'id' => $newdiscussionId,
-            'name' => $user->username . ", " . $currentUser->username,
+            'name' => $discussionName,
             'creator_id' => $currentUser->id
         ]);
         $toSave->save();
         $this->discussionMembershipService->createDiscussionMembership($newdiscussionId,$currentUser->id, 'mod');
-        $this->discussionMembershipService->createDiscussionMembership($newdiscussionId,$user->id, 'mod');
+        $this->discussionMembershipService->createDiscussionMembership($newdiscussionId,$userId, 'mod');
         return $toSave;
     }
 
-    public function findAllDiscussionsCreated($creatorId, $page){
+    public function findAllDiscussionsCreated($page){
+        $creatorId = auth()->user()->id;
         $baseNumber = $page <= 0 ? 10 : $page * 10;
         return Discussion::query()->get()->where("creator_id", $creatorId)->range($baseNumber - 9, $baseNumber);
     }

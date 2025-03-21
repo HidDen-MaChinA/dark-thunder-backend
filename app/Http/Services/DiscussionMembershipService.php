@@ -6,6 +6,8 @@ use App\Models\Discussion;
 use App\Models\DiscussionsMembership;
 
 use exception;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 use function Termwind\terminal;
@@ -40,7 +42,25 @@ class DiscussionMembershipService{
             ]);
     }
 
+    public function findAllDiscussionUserIsIn($page){
+        $baseNumber = $page <= 0 ? 20 : $page * 20;
+        $currentUser = auth()->user();
+        $result = DiscussionsMembership::query()->where("user_id", $currentUser->id)->get();
+        return $result->range($baseNumber - 19, $baseNumber)->map(function (DiscussionsMembership $value){
+            return $value->discussion;
+        });
+    }
 
+    public function findAllDiscussionMembers($discussionId,$page){
+        $baseNumber = $page <= 0 ? 20 : $page * 20;
+        $result = DiscussionsMembership::query()->where("discussion_id", $discussionId)->get();
+        return $result->range($baseNumber - 19, $baseNumber)->map(function (DiscussionsMembership $value){
+            return $value->user;
+        });
+    }
+
+    /*  used to know if the currently authenticated user who try to do
+     something in a discussion is actually a moderator. */
     private function isMod($discussionId){
         $currentUser = auth()->user();
         $userDiscussionMembership = DiscussionsMembership::query()

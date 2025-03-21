@@ -26,4 +26,9 @@ class DiscussionsMembership extends Model
         'add_date',
         'permission',
     ];
+
+    protected $hidden = [
+        'user_id',
+        'discussion_id'
+    ];
 }
