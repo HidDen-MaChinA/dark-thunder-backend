@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthentificationController;
 use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,12 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('/discussion/member/permission/update', [DiscussionsMembershipController::class, 'updateDiscussionMembershipPermission']);
     Route::get('/discussion/members', [DiscussionsMembershipController::class, 'findAllMembersOfDiscussion']);
     Route::get('/discussions/member', [DiscussionsMembershipController::class, 'findAllDiscussionCurrentUserIsIn']);
+
+    //MessageController part
+    Route::post('/discussion/message/create', [MessageController::class, 'createMessage']);
+    Route::post('/discussion/message/delete', [MessageController::class, 'deleteMessage']);
+    Route::post('/discussion/message/update', [MessageController::class, 'updateMessage']);
+    Route::get('/discussion/messages', [MessageController::class, 'findLatestMessages']);
 });
 
 

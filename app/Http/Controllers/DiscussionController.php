@@ -49,8 +49,6 @@ class DiscussionController extends Controller
 
     public function findAllDiscussionsCreated(Request $request){
         $page = $request->query("page");
-        $creatorId = auth()->user()->id;
         return response()->json($this->discussionService->findAllDiscussionsCreated($page));
     }
-
 }

@@ -54,6 +54,7 @@ class MessageService{
             ->paginate(25, null, null,$page);
     }
 
+    // find out if the user with $userId is in the discussion referenced by discussionId
     private function isUserInDiscussion($userId, $discussionId){
         $memberShip = DiscussionsMembership::query()
             ->where("discussion_id", $discussionId)
