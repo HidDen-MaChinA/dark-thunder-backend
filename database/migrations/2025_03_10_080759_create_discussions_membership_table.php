@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('discussions_membership', function (Blueprint $table) {
+        Schema::create('discussions_memberships', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid("discussion_id")->constrained("discussions", "id");
-            $table->foreignUuid("user_id")->constrained("users", "id");
             $table->unique(["discussion_id", "user_id"]);
             $table->dateTime("add_date");
             $table->enum("permission", ["read", "write", "mod"]);
+            $table->timestamps();
+            $table->foreignUuid("discussion_id")->constrained("discussions", "id");
+            $table->foreignUuid("user_id")->constrained("users", "id");
         });
     }
 
