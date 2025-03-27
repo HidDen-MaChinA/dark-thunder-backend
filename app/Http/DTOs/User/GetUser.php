@@ -11,7 +11,7 @@ class GetUser{
         public string $lastname,
         public string $username,
         public string $birthdate,
-        public string $pfp,
+        public ?string $pfp,
         public string $email,
     ){ }
 }
