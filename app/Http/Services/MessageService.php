@@ -45,13 +45,13 @@ class MessageService{
         return 1;
     }
 
-    public function findMessagesSentToDiscussion($discussionId, $page){
+    public function findMessagesSentToDiscussion($discussionId){
         $currentUser = auth()->user();
         return Message::query()
             ->where("user_id", $currentUser->id)
             ->where("discussion_id", $discussionId)
             ->latest()
-            ->paginate(25, null, null,$page);
+            ->paginate(25);
     }
 
     // find out if the user with $userId is in the discussion referenced by discussionId

@@ -44,10 +44,8 @@ class MessageController extends Controller
     }
 
     public function findLatestMessages(Request $request){
-        $validatedRequest = $request->validate([
-            "discussion_id" => "required|uuid",
-        ]);
-        $page = $request->query("page", 1);
-        return $this->messageService->findMessagesSentToDiscussion($validatedRequest["discussion_id"], $page);
+        $discussionId = $request->query("discussion_id");
+        $toReturn = $this->messageService->findMessagesSentToDiscussion($discussionId);
+        return response()->json(["items" => $toReturn->items(), "total" => $toReturn->total()]);
     }
 }
