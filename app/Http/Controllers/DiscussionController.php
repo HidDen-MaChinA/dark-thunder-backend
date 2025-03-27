@@ -44,11 +44,12 @@ class DiscussionController extends Controller
             "id" => "required",
             "discussion_name" => "required"
         ]);
-        return $this->discussionService->createDiscussionWithAnotherUser($validatedDiscussion["id"], $validatedDiscussion["discussion_name"]);
+
+        return response()->json($this->discussionService->createDiscussionWithAnotherUser($validatedDiscussion["id"], $validatedDiscussion["discussion_name"]));
     }
 
-    public function findAllDiscussionsCreated(Request $request){
-        $page = $request->query("page");
-        return response()->json($this->discussionService->findAllDiscussionsCreated($page));
+    public function findAllDiscussionCurrentUserIsIn(){
+        $toReturn = $this->discussionService->findAllDiscussionUserIsIn();
+        return response()->json(["items" => $toReturn->items(), "total" => $toReturn->total()]);
     }
 }

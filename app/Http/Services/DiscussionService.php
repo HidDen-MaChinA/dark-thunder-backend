@@ -3,11 +3,14 @@
 namespace App\Http\Services;
 
 use App\Models\Discussion;
+use App\Models\DiscussionsMembership;
 use exception;
+use Illuminate\Support\Facades\Auth;
 
 class DiscussionService{
     public function __construct(
-        private DiscussionMembershipService $discussionMembershipService
+        private DiscussionMembershipService $discussionMembershipService,
+        private Discussion $discussionModel
     ) { }
     public function createDiscussion(string $name, string | null $messageRestrictionRegex){
         $currentUser = auth()->user();
@@ -19,7 +22,14 @@ class DiscussionService{
             'message_restriction_regex' => $messageRestrictionRegex
         ]);
         $toSave->save();
-        $this->discussionMembershipService->createDiscussionMembership($usedId, $currentUser->id, 'mod');
+        $memberShipToSave = new DiscussionsMembership([
+            "id" => uuid_create(),
+            "user_id" => $currentUser->id,
+            "discussion_id" => $usedId,
+            "add_date" => now()->toDateTimeString(),
+            "permission" => "mod"
+        ]);
+        $memberShipToSave->save();
         return $toSave;
     }
 
@@ -42,13 +52,30 @@ class DiscussionService{
             'creator_id' => $currentUser->id
         ]);
         $toSave->save();
-        $this->discussionMembershipService->createDiscussionMembership($newdiscussionId,$currentUser->id, 'mod');
-        $this->discussionMembershipService->createDiscussionMembership($newdiscussionId,$userId, 'mod');
+        $discussionsToSave = [
+            [
+                "id" => uuid_create(),
+                "user_id" => $currentUser->id,
+                "discussion_id" => $newdiscussionId,
+                "add_date" => now()->toDateTimeString(),
+                "permission" => "mod"
+            ], [
+                "id" => uuid_create(),
+                "user_id" => $$userId,
+                "discussion_id" => $newdiscussionId,
+                "add_date" => now()->toDateTimeString(),
+                "permission" => "mod"
+            ]
+        ];
+        DiscussionsMembership::query()->getQuery()->insert($discussionsToSave);
         return $toSave;
     }
 
-    public function findAllDiscussionsCreated($page){
-        $creatorId = auth()->user()->id;
-        return Discussion::query()->where("creator_id", $creatorId)->paginate(15, null, null, $page);
+    public function findAllDiscussionUserIsIn(){
+        $currentUser = auth()->user();
+        $result = Discussion::query()->whereHas("discussionMembership", function ($query) use ($currentUser) {
+            $query->where("user_id", $currentUser->id);
+        })->paginate(20);
+        return $result;
     }
 }

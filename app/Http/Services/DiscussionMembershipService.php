@@ -30,11 +30,12 @@ class DiscussionMembershipService{
         return $toSave;
     }
 
-    public function updateDiscussionMembershipPermission($discussionId, $userId, $permission){
+    public function updateDiscussionMembershipPermission($id, $discussionId, $userId, $permission){
         if(!$this->isMod($discussionId)){
             throw new exception("only mod can perfom this action");
         }
         return DiscussionsMembership::query()
+            ->where("id", $id)
             ->where("discussion_id", $discussionId)
             ->where("user_id", $userId)
             ->update([
@@ -42,19 +43,12 @@ class DiscussionMembershipService{
             ]);
     }
 
-    public function findAllDiscussionUserIsIn($page){
-        $currentUser = auth()->user();
-        $result = DiscussionsMembership::query()->where("user_id", $currentUser->id)->paginate(20,null, null,$page);
-        return collect($result->items())->map(function (DiscussionsMembership $value){
-            return $value->discussion;
-        });
-    }
 
-    public function findAllDiscussionMembers($discussionId,$page){
-        $result = DiscussionsMembership::query()->where("discussion_id", $discussionId)->paginate(20, null, null,$page);
-        return collect($result->items())->map(function (DiscussionsMembership $value){
+    public function findAllDiscussionMembers($discussionId){
+        $result = DiscussionsMembership::query()->where("discussion_id", $discussionId)->paginate(20);
+        return ["items" => collect($result->items())->map(function (DiscussionsMembership $value){
             return $value->user;
-        });
+        }), "total" => $result->total()];
     }
 
     /*  used to know if the currently authenticated user who try to do
