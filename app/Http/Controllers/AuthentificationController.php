@@ -26,7 +26,8 @@ class AuthentificationController extends BaseController
             if($currentUser->quit){
                 return response()->json(["reason"=>"The user login" . $currentUser->username . " you entered have already quit the application"], 403);
             }
-            return response()->json(["token"=> $currentUser->createToken($userLogin['email'] . $currentUser->getAuthIdentifier() . "_token")]);
+            auth()->login($currentUser);
+            return response()->json(["token"=> $currentUser->createToken($userLogin['email'] . $currentUser->getAuthIdentifier() . "_token")->plainTextToken]);
         }else{
             return response()->json(["error" => "user not found"], 404);
         }
