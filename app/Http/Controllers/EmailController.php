@@ -12,7 +12,6 @@ class EmailController extends Controller
 {
     public function __construct(
         public EmailService $emailService,
-        public Email $email
     ) { }
     public function sendVerificationCode(Request $request){
         $email = $request->validate([

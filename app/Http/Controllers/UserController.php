@@ -74,4 +74,8 @@ class UserController extends BaseController
         );
         $this->userService->update($crupdateUser) ? response()->json(["status" => "user updated"]) : response()->json(["status" => "user could not be updated"]);
     }
+
+    public function findAllUsers(){
+        //TODO: Implement paginated list of users
+    }
 }
