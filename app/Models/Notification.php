@@ -23,4 +23,5 @@ class Notification extends Model
         'discussion_id',
         'notification_message',
     ];
+
 }

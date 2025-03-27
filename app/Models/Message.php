@@ -25,11 +25,6 @@ class Message extends Model
         'discussion_id'
     ];
 
-    protected $hidden = [
-        'user_id',
-        'discussion_id'
-    ];
-
     protected $name = "discussions_messages";
 
 }

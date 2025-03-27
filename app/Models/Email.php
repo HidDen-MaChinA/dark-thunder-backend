@@ -18,6 +18,8 @@ class Email extends Model
 
     protected $primaryKey = "email";
 
+    public $incrementing = false;
+
     protected $hidden= [
         'verified_at',
     ];
