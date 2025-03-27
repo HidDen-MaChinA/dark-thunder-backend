@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->group(function (){
-    Route::post('/auth/whoami', [AuthentificationController::class, 'whoami']);
+    Route::get('/auth/whoami', [AuthentificationController::class, 'whoami']);
     Route::post('/auth/logout', [AuthentificationController::class, 'logout']);
     Route::post('/user/update', [UserController::class, 'update']);
     Route::post('/user/quit', [UserController::class, 'quit']);
@@ -25,13 +25,12 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('/discussion/create', [DiscussionController::class, 'createDiscussion']);
     Route::post('/discussion/update', [DiscussionController::class, 'updateDiscussion']);
     Route::post('/discussion/create/user', [DiscussionController::class, 'createDiscussionWithAnotherUser']);
-    Route::get('/discussions/created', [DiscussionController::class, 'findAllDiscussionsCreated']);
+    Route::get('/discussions', [DiscussionController::class, 'findAllDiscussionCurrentUserIsIn']);
 
     //DiscussionsMembershipController part
     Route::post('/discussion/member/create', [DiscussionsMembershipController::class, 'createDiscussionMembership']);
     Route::post('/discussion/member/permission/update', [DiscussionsMembershipController::class, 'updateDiscussionMembershipPermission']);
     Route::get('/discussion/members', [DiscussionsMembershipController::class, 'findAllMembersOfDiscussion']);
-    Route::get('/discussions/member', [DiscussionsMembershipController::class, 'findAllDiscussionCurrentUserIsIn']);
 
     //MessageController part
     Route::post('/discussion/message/create', [MessageController::class, 'createMessage']);
