@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('friendships', function (Blueprint $table) {
-            $table->id();
+            $table->uuid("id")->primary();
             $table->foreignUuid("sender_user_id")->references("id")->on("users");
             $table->foreignUuid("receiver_user_id")->references("id")->on("users");
             $table->boolean("allowed");
