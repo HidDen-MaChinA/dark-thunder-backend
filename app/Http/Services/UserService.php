@@ -54,6 +54,13 @@ class UserService{
         }
     }
 
+    public function findAllFriends(){
+        $currentUser = auth()->user();
+        return User::query()
+            ->with(["senderUser", "receiverUser"])
+            ->whereHas("senderUser")->withWhereHas("receiverUser");
+   }
+
     private function isEmailVerified($email){
         $subject = Email::query()->where("email", $email)->first();
         if(isset($subject)){

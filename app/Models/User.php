@@ -17,6 +17,14 @@ class User extends Authenticatable
     public function discussion() : BelongsTo{
         return $this->belongsTo(Discussion::class);
     }
+
+    public function senderUser() : BelongsTo{
+        return $this->belongsTo(Friendship::class, "sender_user_id", "id", "senderUser");
+    }
+
+    public function receiverUser() : BelongsTo{
+        return $this->belongsTo(Friendship::class, "receiver_user_id", "id", "receiverUser");
+    }
     /**
      * The attributes that are mass assignable.
      *

@@ -25,6 +25,10 @@ class UserController extends BaseController
         return response()->json(["done" => $this->userService->quit($userPayload["password"], $userPayload["email"])]);
     }
 
+    public function findAllFriends(){
+
+    }
+
     public function create(Request $request)
     {
         $userPayload = $request->validate([
