@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthentificationController;
 use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\FriendshipController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,13 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('/discussion/message/delete', [MessageController::class, 'deleteMessage']);
     Route::post('/discussion/message/update', [MessageController::class, 'updateMessage']);
     Route::get('/discussion/messages', [MessageController::class, 'findLatestMessages']);
+
+    //FriendShipController part
+    Route::post('/user/friendship/create', [FriendshipController::class, 'create']);
+    Route::post('/user/friendship/delete', [FriendshipController::class, 'delete']);
+    Route::post('/user/friendship/allow', [FriendshipController::class, 'allowUserFriendship']);
+    Route::get('/user/friendships/received', [FriendshipController::class, 'findAllNotAllowedUserFriendshipReceived']);
+    Route::get('/user/friendships/sent', [FriendshipController::class, 'findAllNotAllowedUserFriendshipSent']);
 });
 
 

@@ -2,15 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Services\FriendshipService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 class FriendshipController extends Controller{
-    public function create(){
+    public function __construct(
+        public FriendshipService $friendshipService
+    )
+    { }
 
+    public function create(Request $request){
+        $validatedRequest = $request->validate([
+            "user_id" => "uuid|required"
+        ]);
+        return $this->friendshipService->createUserFriendship($validatedRequest["userId"]);
     }
 
-    public function delete(){
+    public function delete(Request $request){
+        $validatedRequest = $request->validate([
+            "friendship_id" => "uuid|required"
+        ]);
+       return $this->friendshipService->deleteUserFriendship($validatedRequest["friendship_id"]);
+    }
 
+    public function allowUserFriendship(Request $request){
+        $validatedRequest = $request->validate([
+            "friendship_id" => "uuid|required"
+        ]);
+       return $this->friendshipService->allowUserFriendship($validatedRequest["friendship_id"]);
+    }
+
+    public function findAllNotAllowedUserFriendshipReceived(Request $request){
+        $toReturn = $this->friendshipService->findAllNotAllowedUserFriendshipReceived();
+        return ["items" => $toReturn->items(), "total" => $toReturn->total()];
+    }
+
+    public function findAllNotAllowedUserFriendshipSent(Request $request){
+        $toReturn = $this->friendshipService->findAllNotAllowedUserFriendshipSent();
+        return ["items" => $toReturn->items(), "total" => $toReturn->total()];
     }
 }
