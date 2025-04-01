@@ -4,7 +4,7 @@ namespace App\Http\Services;
 
 use App\Models\Discussion;
 use App\Models\DiscussionsMembership;
-
+use App\Models\Friendship;
 use exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -15,8 +15,12 @@ use function Termwind\terminal;
 class DiscussionMembershipService{
     public function __construct() { }
     public function createDiscussionMembership($discussionId, $userId, $permission){
-        if(!$this->isMod($discussionId)){
+        $currentUser = auth()->user();
+        if(!$this->isMod($discussionId, $currentUser->id)){
             throw new exception("only mod can perfom this action");
+        }
+        if(!$this->isFriend($currentUser->id, $userId)){
+            throw new exception("only possible if the two users where friends");
         }
         $usedId = uuid_create();
         $toSave = new DiscussionsMembership([
@@ -31,7 +35,8 @@ class DiscussionMembershipService{
     }
 
     public function updateDiscussionMembershipPermission($id, $discussionId, $userId, $permission){
-        if(!$this->isMod($discussionId)){
+        $currentUser = auth()->user();
+        if(!$this->isMod($discussionId, $currentUser->id)){
             throw new exception("only mod can perfom this action");
         }
         return DiscussionsMembership::query()
@@ -53,12 +58,21 @@ class DiscussionMembershipService{
 
     /*  used to know if the currently authenticated user who try to do
      something in a discussion is actually a moderator. */
-    private function isMod($discussionId){
-        $currentUser = auth()->user();
+    private function isMod($discussionId, $userId){
         $userDiscussionMembership = DiscussionsMembership::query()
             ->where("discussion_id", $discussionId)
-            ->where("user_id", $currentUser->id)
+            ->where("user_id", $userId)
             ->get();
         return $userDiscussionMembership == 'mod';
+    }
+
+    // used to know if the two users corresponding with the ids are friends
+    private function isFriend($userAId, $userBId){
+        $friendship = Friendship::query()
+            ->where("receiver_user_id", $userAId)
+            ->where("sender_user_id", $userAId)
+            ->orWhere("receiver_user_id", $userBId)
+            ->orWhere("sender_user_id", $userBId)->first();
+        return $friendship == null ? false : $friendship->allowed;
     }
 }

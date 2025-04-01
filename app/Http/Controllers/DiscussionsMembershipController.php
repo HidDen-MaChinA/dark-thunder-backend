@@ -15,7 +15,6 @@ class DiscussionsMembershipController extends Controller
         return $this->discussionMembershipService->findAllDiscussionMembers($discussionId);
     }
 
-
     public function createDiscussionMembership(Request $request){
         $validatedRequest = $request->validate([
             "discussion_id" => "required",
