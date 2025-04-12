@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Http\Controllers;
+
 use App\Http\Services\DiscussionMembershipService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -19,7 +21,7 @@ class DiscussionsMembershipController extends Controller
         $validatedRequest = $request->validate([
             "discussion_id" => "required",
             "user_id" => "required",
-            "permission" => "regex:/read|write/u"
+            "permission" => ["regex:/read|write/u"]
         ]);
         return $this->discussionMembershipService->createDiscussionMembership(
             $validatedRequest["discussion_id"],

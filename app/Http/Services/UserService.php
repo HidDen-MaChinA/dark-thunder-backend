@@ -5,9 +5,15 @@ namespace App\Http\Services;
 use App\Http\DTOs\User\CrupdateUser;
 use App\Http\Mappers\UserMapper;
 use App\Models\Email;
+use App\Models\Friendship;
 use App\Models\User;
 use DateTime;
 use exception;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Query\Builder as QueryBuilder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Query\Builder as DatabaseQueryBuilder;
 
 class UserService{
     public function __construct(
@@ -56,10 +62,33 @@ class UserService{
 
     public function findAllFriends(){
         $currentUser = auth()->user();
-        return User::query()
-            ->with(["senderUser", "receiverUser"])
-            ->whereHas("senderUser")->withWhereHas("receiverUser");
-   }
+        $toReturn = User::query()->where("id", $currentUser->id)->with(
+            [
+                "receiverUser" => fn($query)=>$query->where("allowed", 1),
+                "senderUser" => fn($query)=>$query->where("allowed", 1),
+            ]
+        )->where("id", $currentUser->id)->first();
+        return $toReturn->senderUser->merge($toReturn->receiverUser);
+    }
+
+    public function findAllNonFriends(){
+        $currentUser = auth()->user();
+        $toReturn = User::query()
+            // prevent the current user to be on the list
+            ->where("id", "!=", $currentUser->id)
+            // if you have no friend you are in the list
+            ->whereDoesntHave("receiverUser")
+            ->whereDoesntHave("senderUser")
+            // any user that have friends but are not the current user's friend yet
+            ->orWhereHas("receiverUser", function ($query) use ($currentUser) {
+                $query->where("receiver_user_id", "!=", $currentUser->id);
+            })
+            ->WhereHas("senderUser", function ($query) use ($currentUser) {
+                $query->where("sender_user_id", "!=", $currentUser->id);
+            })
+            ->get();
+        return $toReturn;
+    }
 
     private function isEmailVerified($email){
         $subject = Email::query()->where("email", $email)->first();

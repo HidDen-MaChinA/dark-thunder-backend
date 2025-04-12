@@ -20,7 +20,8 @@ class Friendship extends Model
     }
 
     protected $fillable = [
-        "send_user_id",
+        "id",
+        "sender_user_id",
         "receiver_user_id",
         "allowed"
     ];

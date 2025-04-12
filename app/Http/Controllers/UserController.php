@@ -25,10 +25,6 @@ class UserController extends BaseController
         return response()->json(["done" => $this->userService->quit($userPayload["password"], $userPayload["email"])]);
     }
 
-    public function findAllFriends(){
-
-    }
-
     public function create(Request $request)
     {
         $userPayload = $request->validate([
@@ -81,5 +77,13 @@ class UserController extends BaseController
 
     public function findAllUsers(){
         //TODO: Implement paginated list of users
+    }
+
+    public function findAllFriends(){
+        return $this->userService->findAllFriends();
+    }
+
+    public function findAllNonFriends(){
+        return $this->userService->findAllNonFriends();
     }
 }

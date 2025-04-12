@@ -14,13 +14,14 @@ class FriendshipService {
         other creation attempt with the same users won't be allowed before the existing one is deleted */
         $friendShip = Friendship::query()
             ->where("receiver_user_id", $currentUser->id)
-            ->where("sender_user_id", $currentUser->id)
-            ->orWhere("receiver_user_id", $userId)
-            ->orWhere("sender_user_id", $userId)->first();
+            ->Where("sender_user_id", $userId)
+            ->orWhere("sender_user_id", $currentUser->id)
+            ->Where("receiver_user_id", $userId)->first();
         if($friendShip != null){
             throw new exception("this friendship already exist");
         }
         $toSave = new Friendship([
+            "id" => uuid_create(),
             "receiver_user_id" => $userId,
             "sender_user_id" => $currentUser->id,
             "allowed" => false

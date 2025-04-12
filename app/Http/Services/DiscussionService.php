@@ -78,4 +78,5 @@ class DiscussionService{
         })->paginate(20);
         return $result;
     }
+
 }

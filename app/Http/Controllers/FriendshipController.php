@@ -16,7 +16,7 @@ class FriendshipController extends Controller{
         $validatedRequest = $request->validate([
             "user_id" => "uuid|required"
         ]);
-        return $this->friendshipService->createUserFriendship($validatedRequest["userId"]);
+        return $this->friendshipService->createUserFriendship($validatedRequest["user_id"]);
     }
 
     public function delete(Request $request){

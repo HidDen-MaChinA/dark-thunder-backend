@@ -24,7 +24,7 @@ class Discussion extends Model
     protected $fillable = [
         'id',
         'name',
-        'messages_restriction_regex',
+        'message_restriction_regex',
         'creator_id',
     ];
 

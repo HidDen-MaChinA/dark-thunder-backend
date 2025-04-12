@@ -3,8 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Http\Services\DiscussionMembershipService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -18,13 +21,18 @@ class User extends Authenticatable
         return $this->belongsTo(Discussion::class);
     }
 
-    public function senderUser() : BelongsTo{
-        return $this->belongsTo(Friendship::class, "sender_user_id", "id", "senderUser");
+    public function discussionMembership() : BelongsTo{
+        return $this->belongsTo(DiscussionsMembership::class);
     }
 
-    public function receiverUser() : BelongsTo{
-        return $this->belongsTo(Friendship::class, "receiver_user_id", "id", "receiverUser");
+    public function senderUser() : BelongsToMany{
+        return $this->belongsToMany(User::class, "friendships", "sender_user_id", "receiver_user_id");
     }
+
+    public function receiverUser() : BelongsToMany{
+        return $this->belongsToMany(User::class, "friendships", "receiver_user_id", "sender_user_id");
+    }
+
     /**
      * The attributes that are mass assignable.
      *

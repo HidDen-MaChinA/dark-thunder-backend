@@ -62,8 +62,8 @@ class DiscussionMembershipService{
         $userDiscussionMembership = DiscussionsMembership::query()
             ->where("discussion_id", $discussionId)
             ->where("user_id", $userId)
-            ->get();
-        return $userDiscussionMembership == 'mod';
+            ->first();
+        return $userDiscussionMembership->permission == 'mod';
     }
 
     // used to know if the two users corresponding with the ids are friends
