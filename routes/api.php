@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthentificationController;
 use App\Http\Controllers\DiscussionController;
+use App\Http\Controllers\DiscussionsMembershipController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\FriendshipController;
 use App\Http\Controllers\MessageController;
@@ -19,8 +20,12 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function (){
     Route::get('/auth/whoami', [AuthentificationController::class, 'whoami']);
     Route::post('/auth/logout', [AuthentificationController::class, 'logout']);
+
+    //UserController part
     Route::post('/user/update', [UserController::class, 'update']);
     Route::post('/user/quit', [UserController::class, 'quit']);
+    Route::get('/user/friends', [UserController::class, 'findAllFriends']);
+    Route::get('/user/nonFriends', [UserController::class, 'findAllNonFriends']);
 
     //DiscussionController part
     Route::post('/discussion/create', [DiscussionController::class, 'createDiscussion']);
