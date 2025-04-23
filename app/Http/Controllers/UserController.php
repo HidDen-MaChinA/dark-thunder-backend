@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use exception;
 
 class UserController extends BaseController
 {
@@ -85,5 +86,13 @@ class UserController extends BaseController
 
     public function findAllNonFriends(){
         return $this->userService->findAllNonFriends();
+    }
+
+    public function findAllFriendsNotInDiscussion(Request $request){
+        $discussionId = $request->query("discussion_id");
+        if($discussionId==null){
+            throw new exception("discussion_id required");
+        }
+        return $this->userService->findAllFriendsNotInDiscussion($discussionId);
     }
 }

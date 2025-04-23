@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Http\DTOs\User\CrupdateUser;
 use App\Http\Mappers\UserMapper;
+use App\Models\Discussion;
 use App\Models\Email;
 use App\Models\Friendship;
 use App\Models\User;
@@ -62,29 +63,56 @@ class UserService{
 
     public function findAllFriends(){
         $currentUser = auth()->user();
-        $toReturn = User::query()->where("id", $currentUser->id)->with(
-            [
-                "receiverUser" => fn($query)=>$query->where("allowed", 1),
-                "senderUser" => fn($query)=>$query->where("allowed", 1),
-            ]
-        )->where("id", $currentUser->id)->first();
+        $toReturn = User::query()
+            ->where("id", "!=", $currentUser->id)
+            ->where(function (EloquentBuilder $builder) use ($currentUser){
+                $builder->whereHas("senderUser", function (EloquentBuilder $builder) use ($currentUser){
+                    $builder->where("friendships.sender_user_id", $currentUser->id)->where("friendships.allowed", 1);
+                })
+                ->orWhereHas("receiverUser", function (EloquentBuilder $builder) use ($currentUser){
+                    $builder->where("friendships.receiver_user_id", $currentUser->id)->where("friendships.allowed", 1);
+                });
+            });
+
         return $toReturn->senderUser->merge($toReturn->receiverUser);
+    }
+
+    public function findAllFriendsNotInDiscussion($discussionId){
+        $currentUser = auth()->user();
+        $toReturn = User::query()
+        ->where("id", "!=", $currentUser->id)
+        ->where(function (EloquentBuilder $builder) use ($currentUser){
+            $builder->whereHas("senderUser", function (EloquentBuilder $builder) use ($currentUser){
+                $builder->where("friendships.sender_user_id", $currentUser->id)->where("friendships.allowed", 1);
+            })
+            ->orWhereHas("receiverUser", function (EloquentBuilder $builder) use ($currentUser){
+                $builder->where("friendships.receiver_user_id", $currentUser->id)->where("friendships.allowed", 1);
+            });
+        })
+        ->whereDoesntHave("discussions", function (EloquentBuilder $builder) use ($discussionId){
+            $builder->where("discussion_id", $discussionId);
+        })
+        ->get();
+        // ->getQuery()->ddRawSql();
+        return $toReturn;
     }
 
     public function findAllNonFriends(){
         $currentUser = auth()->user();
         $toReturn = User::query()
             // prevent the current user to be on the list
+            // ->where("users.id", "!=", $currentUser->id)
+            // ->where(function (EloquentBuilder $builder){
+
+            // })
             ->where("id", "!=", $currentUser->id)
-            // if you have no friend you are in the list
-            ->whereDoesntHave("receiverUser")
-            ->whereDoesntHave("senderUser")
-            // any user that have friends but are not the current user's friend yet
-            ->orWhereHas("receiverUser", function ($query) use ($currentUser) {
-                $query->where("receiver_user_id", "!=", $currentUser->id);
-            })
-            ->WhereHas("senderUser", function ($query) use ($currentUser) {
-                $query->where("sender_user_id", "!=", $currentUser->id);
+            ->whereNot(function (EloquentBuilder $builder) use ($currentUser){
+                $builder->whereHas("senderUser", function (EloquentBuilder $builder) use ($currentUser){
+                    $builder->where("friendships.sender_user_id", $currentUser->id);
+                })
+                ->orWhereHas("receiverUser", function (EloquentBuilder $builder) use ($currentUser){
+                    $builder->where("friendships.receiver_user_id", $currentUser->id);
+                });
             })
             ->get();
         return $toReturn;
