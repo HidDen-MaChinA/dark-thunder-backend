@@ -4,6 +4,7 @@ namespace App\Http\Mappers;
 
 use App\Http\DTOs\User\CrupdateUser;
 use App\Http\DTOs\User\GetUser;
+use App\Http\DTOs\User\SimplifiedUser;
 use App\Models\User;
 use Faker\Core\Uuid;
 
@@ -22,6 +23,15 @@ class UserMapper {
          $user->email
       );
    }
+
+   public function entityToDTOSimplifiedUser(User $user) : SimplifiedUser{
+      return new SimplifiedUser(
+         $user->id,
+         $user->username,
+         $user->pfp
+      );
+   }
+
    public function DTOCrupdateUserToEntity(CrupdateUser $crupdateUser){
     $attributes= [
         "firstname"=>$crupdateUser->firstname,
