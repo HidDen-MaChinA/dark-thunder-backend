@@ -26,15 +26,18 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('/user/quit', [UserController::class, 'quit']);
     Route::get('/user/friends', [UserController::class, 'findAllFriends']);
     Route::get('/user/nonFriends', [UserController::class, 'findAllNonFriends']);
+    Route::get('/user/friends/notInDiscussion', [UserController::class, 'findAllFriendsNotInDiscussion']);
 
     //DiscussionController part
     Route::post('/discussion/create', [DiscussionController::class, 'createDiscussion']);
     Route::post('/discussion/update', [DiscussionController::class, 'updateDiscussion']);
     Route::post('/discussion/create/user', [DiscussionController::class, 'createDiscussionWithAnotherUser']);
     Route::get('/discussions', [DiscussionController::class, 'findAllDiscussionCurrentUserIsIn']);
+    Route::get('/discussion', [DiscussionController::class, 'findDiscussionById']);
 
     //DiscussionsMembershipController part
     Route::post('/discussion/member/create', [DiscussionsMembershipController::class, 'createDiscussionMembership']);
+    Route::post('/discussion/member/delete', [DiscussionsMembershipController::class, 'deleteDiscussionMembership']);
     Route::post('/discussion/member/permission/update', [DiscussionsMembershipController::class, 'updateDiscussionMembershipPermission']);
     Route::get('/discussion/members', [DiscussionsMembershipController::class, 'findAllMembersOfDiscussion']);
 
