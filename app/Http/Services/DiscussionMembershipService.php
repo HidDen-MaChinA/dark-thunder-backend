@@ -2,18 +2,21 @@
 
 namespace App\Http\Services;
 
+use App\Http\Mappers\UserMapper;
 use App\Models\Discussion;
 use App\Models\DiscussionsMembership;
 use App\Models\Friendship;
+use App\Models\User;
 use exception;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
-use function Termwind\terminal;
-
 class DiscussionMembershipService{
-    public function __construct() { }
+    public function __construct( private UserMapper $userMapper) { }
+
     public function createDiscussionMembership($discussionId, $userId, $permission){
         $currentUser = auth()->user();
         if(!$this->isMod($discussionId, $currentUser->id)){
@@ -50,10 +53,37 @@ class DiscussionMembershipService{
 
 
     public function findAllDiscussionMembers($discussionId){
-        $result = DiscussionsMembership::query()->where("discussion_id", $discussionId)->paginate(20);
-        return ["items" => collect($result->items())->map(function (DiscussionsMembership $value){
-            return $value->user;
+        $currentUser = auth()->user();
+        $result = User::query()
+        ->whereHas("discussions", function (EloquentBuilder $query) use ($discussionId, $currentUser){
+            $query
+                ->where("discussions_memberships.discussion_id", $discussionId)
+                ->where("discussions_memberships.user_id", "!=", $currentUser->id);
+        })->paginate(20);
+
+        return ["items" => collect($result->items())->map(function ($value){
+            return $this->userMapper->entityToDTOSimplifiedUser($value);
         }), "total" => $result->total()];
+    }
+
+    public function deleteDiscussionMembership($discussionId, $userId){
+        $currentUser = auth()->user();
+        if(!$this->isMod($discussionId, $currentUser->id)){
+            throw new exception("only mod can perfom this action");
+        }
+
+        if($currentUser->id == $userId){
+            throw new exception("user can't remove himself");
+        }
+
+        $deleted = DiscussionsMembership::query()
+            ->where("discussion_id", $discussionId)
+            ->where("user_id", $userId)
+            ->delete();
+        if($deleted == 0){
+            return "no user found";
+        }
+        return "user deleted";
     }
 
     /*  used to know if the currently authenticated user who try to do

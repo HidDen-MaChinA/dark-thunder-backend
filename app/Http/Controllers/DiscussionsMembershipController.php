@@ -30,6 +30,18 @@ class DiscussionsMembershipController extends Controller
         );
     }
 
+    public function deleteDiscussionMembership(Request $request){
+        $validatedRequest = $request->validate([
+            "discussion_id" => "required",
+            "user_id" => "required",
+        ]);
+
+        return response()->json(["message" => $this->discussionMembershipService->deleteDiscussionMembership(
+            $validatedRequest["discussion_id"],
+            $validatedRequest["user_id"]
+        )]);
+    }
+
     public function updateDiscussionMembershipPermission(Request $request){
         $validatedRequest = $request->validate([
             "id" => "uuid|required",
