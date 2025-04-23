@@ -17,20 +17,16 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    public function discussion() : BelongsTo{
-        return $this->belongsTo(Discussion::class);
-    }
-
-    public function discussionMembership() : BelongsTo{
-        return $this->belongsTo(DiscussionsMembership::class);
+    public function discussions() : BelongsToMany{
+        return $this->belongsToMany(Discussion::class, "discussions_memberships", "user_id", "discussion_id");
     }
 
     public function senderUser() : BelongsToMany{
-        return $this->belongsToMany(User::class, "friendships", "sender_user_id", "receiver_user_id");
+        return $this->belongsToMany(User::class, "friendships", "receiver_user_id","sender_user_id");
     }
 
     public function receiverUser() : BelongsToMany{
-        return $this->belongsToMany(User::class, "friendships", "receiver_user_id", "sender_user_id");
+        return $this->belongsToMany(User::class, "friendships", "sender_user_id", "receiver_user_id");
     }
 
     /**

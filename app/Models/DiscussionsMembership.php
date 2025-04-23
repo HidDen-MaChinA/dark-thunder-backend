@@ -12,14 +12,6 @@ class DiscussionsMembership extends Model
 {
     use HasFactory, HasUuids;
 
-    public function discussion() : BelongsTo{
-        return $this->belongsTo(Discussion::class);
-    }
-
-    public function user() : HasOne{
-        return $this->hasOne(User::class);
-    }
-
     protected $fillable = [
         'id',
         'user_id',
