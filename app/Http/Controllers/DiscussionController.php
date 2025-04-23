@@ -50,6 +50,14 @@ class DiscussionController extends Controller
 
     public function findAllDiscussionCurrentUserIsIn(){
         $toReturn = $this->discussionService->findAllDiscussionUserIsIn();
-        return response()->json(["items" => $toReturn->items(), "total" => $toReturn->total()]);
+        return response()->json(["per_page" => $toReturn->perPage(),"items" => $toReturn->items(), "total" => $toReturn->total()]);
+    }
+
+    public function findDiscussionById(Request $request){
+        $id = $request->query("id");
+        if($id === null){
+            throw new exception("id required");
+        }
+        return $this->discussionService->findDiscussionById($id);
     }
 }

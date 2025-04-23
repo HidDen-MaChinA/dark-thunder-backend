@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Models\Discussion;
 use App\Models\DiscussionsMembership;
+use App\Models\User;
 use exception;
 use Illuminate\Support\Facades\Auth;
 
@@ -73,10 +74,15 @@ class DiscussionService{
 
     public function findAllDiscussionUserIsIn(){
         $currentUser = auth()->user();
-        $result = Discussion::query()->whereHas("discussionMembership", function ($query) use ($currentUser) {
-            $query->where("user_id", $currentUser->id);
+        $result = Discussion::query()->whereHas("members", function ($query) use ($currentUser) {
+            $query->where("discussions_memberships.user_id","=", $currentUser->id);
         })->paginate(20);
+
         return $result;
+    }
+
+    public function findDiscussionById($id){
+        return Discussion::query()->find($id);
     }
 
 }
