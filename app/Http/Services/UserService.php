@@ -63,18 +63,31 @@ class UserService{
 
     public function findAllFriends(){
         $currentUser = auth()->user();
-        $toReturn = User::query()
-            ->where("id", "!=", $currentUser->id)
+        $toReturn = Friendship::query()
+            ->with([
+                "senderUser" => fn($v)=>$v,
+                "receiverUser" => fn($v)=>$v
+            ])
             ->where(function (EloquentBuilder $builder) use ($currentUser){
-                $builder->whereHas("senderUser", function (EloquentBuilder $builder) use ($currentUser){
-                    $builder->where("friendships.sender_user_id", $currentUser->id)->where("friendships.allowed", 1);
-                })
-                ->orWhereHas("receiverUser", function (EloquentBuilder $builder) use ($currentUser){
-                    $builder->where("friendships.receiver_user_id", $currentUser->id)->where("friendships.allowed", 1);
-                });
-            });
+                $builder
+                    ->where("sender_user_id", $currentUser->id)
+                    ->where("allowed", 1);
+            })
+            ->orWhere(function (EloquentBuilder $builder) use ($currentUser){
+                $builder
+                    ->where("receiver_user_id", $currentUser->id)
+                    ->where("allowed", 1);
+            })
+            ->get();
 
-        return $toReturn->senderUser->merge($toReturn->receiverUser);
+        return $toReturn->map(function (Friendship $each) use ($currentUser){
+            $each->receiverUser["friendship_id"]=$each->id;
+            if($currentUser->id === $each->senderUser->id){
+                return $each->receiverUser;
+            }else{
+                return $each->senderUser;
+            }
+        });
     }
 
     public function findAllFriendsNotInDiscussion($discussionId){
