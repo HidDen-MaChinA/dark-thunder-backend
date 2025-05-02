@@ -33,13 +33,13 @@ class FriendshipController extends Controller{
        return $this->friendshipService->allowUserFriendship($validatedRequest["friendship_id"]);
     }
 
-    public function findAllNotAllowedUserFriendshipReceived(Request $request){
+    public function findAllNotAllowedUserFriendshipReceived(){
         $toReturn = $this->friendshipService->findAllNotAllowedUserFriendshipReceived();
-        return ["items" => $toReturn->items(), "total" => $toReturn->total()];
+        return $toReturn->items();
     }
 
     public function findAllNotAllowedUserFriendshipSent(Request $request){
         $toReturn = $this->friendshipService->findAllNotAllowedUserFriendshipSent();
-        return ["items" => $toReturn->items(), "total" => $toReturn->total()];
+        return $toReturn->items();
     }
 }
