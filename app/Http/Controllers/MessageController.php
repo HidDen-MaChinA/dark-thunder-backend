@@ -46,6 +46,6 @@ class MessageController extends Controller
     public function findLatestMessages(Request $request){
         $discussionId = $request->query("discussion_id");
         $toReturn = $this->messageService->findMessagesSentToDiscussion($discussionId);
-        return response()->json(["items" => $toReturn->items(), "total" => $toReturn->total()]);
+        return response()->json($toReturn->items());
     }
 }

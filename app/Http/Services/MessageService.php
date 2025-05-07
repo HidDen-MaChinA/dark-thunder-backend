@@ -47,8 +47,13 @@ class MessageService{
 
     public function findMessagesSentToDiscussion($discussionId){
         $currentUser = auth()->user();
+        if(!$this->isUserInDiscussion($currentUser->id, $discussionId)){
+            throw new exception("can't fetch messages from discussions the user is not in");
+        }
         return Message::query()
-            ->where("user_id", $currentUser->id)
+            ->with([
+                "user"=>fn($v)=>$v
+            ])
             ->where("discussion_id", $discussionId)
             ->latest()
             ->paginate(25);
