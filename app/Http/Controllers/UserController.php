@@ -95,4 +95,5 @@ class UserController extends BaseController
         }
         return $this->userService->findAllFriendsNotInDiscussion($discussionId);
     }
+
 }
