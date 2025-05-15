@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthentificationController;
+use App\Http\Controllers\CompositeDataController;
 use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\DiscussionsMembershipController;
 use App\Http\Controllers\EmailController;
@@ -61,4 +62,7 @@ Route::middleware('guest')->middleware('remove-cors')->group(function(){
     Route::post('/guest/email/verify', [EmailController::class, 'verifyEmail']);
     Route::post('/guest/user/create', [UserController::class, 'create']);
     Route::post('/guest/auth/login', [AuthentificationController::class, 'login']);
+
+    //CompositeDataController guest part
+    Route::post('/guest/user/channel/discussions', [CompositeDataController::class], "findDiscussionsIdsUserInByDailyDiscussionsToken");
 });
