@@ -2,10 +2,12 @@
 
 namespace App\Http\Services;
 
+use App\Http\WebSocket;
 use App\Models\Discussion;
 use App\Models\DiscussionsMembership;
 use App\Models\Message;
 use exception;
+use Socket;
 
 class MessageService{
     public function __construct(
@@ -22,7 +24,7 @@ class MessageService{
             'discussion_id' => $discussionId,
         ]);
         $toSave->save();
-        return 1;
+        return $toSave;
     }
 
     public function deleteMessage($id){

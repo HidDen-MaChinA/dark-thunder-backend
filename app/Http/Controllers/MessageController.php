@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\DarkThunderRealtime;
 use App\Http\Services\MessageService;
+use App\Http\WebSocket;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 class MessageController extends Controller
 {
     public function __construct(
-        private MessageService $messageService
+        private MessageService $messageService,
     ) { }
 
     public function createMessage(Request $request){
@@ -18,10 +20,13 @@ class MessageController extends Controller
             "discussion_id" => "required|uuid"
         ]);
 
-        return $this->messageService->createMessage(
+
+        $savedMessage = $this->messageService->createMessage(
             $validatedRequest["value"],
             $validatedRequest["discussion_id"]
         );
+        DarkThunderRealtime::dispatchEvent("message", ["discussion_id", $validatedRequest["discussion_id"]]);
+        return $savedMessage;
     }
 
     public function deleteMessage(Request $request){

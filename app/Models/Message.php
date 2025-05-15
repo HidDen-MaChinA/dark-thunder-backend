@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Message extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
 
     public function user() : HasOne {
         return $this->hasOne(User::class, "id", "user_id");
@@ -25,6 +25,6 @@ class Message extends Model
         'discussion_id'
     ];
 
-    protected $name = "discussions_messages";
+    public $table = "discussions_messages";
 
 }
