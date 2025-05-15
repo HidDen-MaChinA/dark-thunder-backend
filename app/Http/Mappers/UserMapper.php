@@ -7,6 +7,7 @@ use App\Http\DTOs\User\GetUser;
 use App\Http\DTOs\User\SimplifiedUser;
 use App\Models\User;
 use Faker\Core\Uuid;
+use Illuminate\Support\Carbon;
 
 class UserMapper {
    public function __construct() {
@@ -20,7 +21,8 @@ class UserMapper {
          $user->username,
          $user->birthdate,
          $user->pfp,
-         $user->email
+         $user->email,
+         $user->daily_discussions_token
       );
    }
 
@@ -41,6 +43,8 @@ class UserMapper {
         "password"=>$crupdateUser->password,
         "birthdate"=>$crupdateUser->birthdate,
         "pfp"=>$crupdateUser->pfp,
+        "daily_discussions_token"=>uuid_create(),
+        "daily_discussions_token_creation_date"=>Carbon::now()->toDateTimeString()
     ];
     if($crupdateUser->id != null){
         $attributes["id"] = $crupdateUser->id;

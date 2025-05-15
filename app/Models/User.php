@@ -44,6 +44,8 @@ class User extends Authenticatable
         'email',
         'quit',
         'password',
+        'daily_discussions_token',
+        'daily_discussions_token_creation_date'
     ];
 
     public $incrementing = false;

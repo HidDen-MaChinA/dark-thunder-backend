@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('email', 100)->unique();
             $table->foreign('email')->references('email')->on("emails")->onDelete("cascade");
             $table->string('password');
+            $table->uuid('daily_discussions_token')->nullable();
+            $table->dateTime('daily_discussions_token_creation_date')->nullable();
             $table->rememberToken();
             $table->boolean("quit")->nullable();
             $table->timestamps();

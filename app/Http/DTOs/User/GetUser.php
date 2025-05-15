@@ -13,5 +13,6 @@ class GetUser{
         public string $birthdate,
         public ?string $pfp,
         public string $email,
+        public string $daily_discussions_token
     ){ }
 }
