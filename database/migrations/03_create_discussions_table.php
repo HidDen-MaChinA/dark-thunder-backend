@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('discussions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->text("name");
-            $table->foreignUuid("creator_id")->references("id")->on("users")->onDelete("cascade");
+            $table->foreignUuid("creator_id")->constrained("users", "id")->cascadeOnDelete();
             $table->string("message_restriction_regex")->nullable();
             $table->timestamps();
         });
