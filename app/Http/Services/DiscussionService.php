@@ -6,20 +6,31 @@ use App\Models\Discussion;
 use App\Models\DiscussionsMembership;
 use App\Models\User;
 use exception;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class DiscussionService{
     public function __construct(
         private DiscussionMembershipService $discussionMembershipService,
-        private Discussion $discussionModel
+        private Discussion $discussionModel,
+        private FileStorageService $fileStorageService
     ) { }
-    public function createDiscussion(string $name, string | null $messageRestrictionRegex){
+    public function createDiscussion(string $name, string | null $messageRestrictionRegex, UploadedFile|null $image){
         $currentUser = auth()->user();
         $usedId = uuid_create();
+
+        $filePath = null;
+        if($image!=null){
+            $fileName = uuid_create() . ".jpg";
+            $filePath = $this->fileStorageService->saveFileAs($image, $fileName, "discussionsPictures");
+        }
+        $imageLink = request()->getSchemeAndHttpHost() . "/" . $filePath;
         $toSave = new Discussion([
             'id' => $usedId,
             'name' => $name,
             'creator_id' => $currentUser->id,
+            'image' => $imageLink,
             'message_restriction_regex' => $messageRestrictionRegex
         ]);
         $toSave->save();
@@ -34,14 +45,19 @@ class DiscussionService{
         return $toSave;
     }
 
-    public function updateDiscussion(string $name, string $id, string | null $messageRestrictionRegex)
+    public function updateDiscussion(string $name, string $id, string | null $messageRestrictionRegex, UploadedFile|null $image)
     {
-        return Discussion::query()->where('id', $id)->update(
-            [
-                "message_restriction_regex" => $messageRestrictionRegex,
-                "name" => $name
-            ]
-        );
+        $filePath = null;
+        $arr = [];
+        $arr["name"] = $name;
+        if($image!=null){
+            $fileName = uuid_create() . ".jpg";
+            $filePath = $this->fileStorageService->saveFileAs($image, $fileName, "discussionsPictures");
+            $imageLink = request()->getSchemeAndHttpHost() . "/" . $filePath;
+            $arr["image"] = $imageLink;
+        }
+        if($messageRestrictionRegex!= null) $arr["message_restriction_regex"] = $messageRestrictionRegex;
+        return Discussion::query()->where('id', $id)->update($arr);
     }
 
     public function createDiscussionWithAnotherUser($userId, $discussionName){

@@ -25,7 +25,7 @@ class MessageController extends Controller
             $validatedRequest["value"],
             $validatedRequest["discussion_id"]
         );
-        DarkThunderRealtime::dispatchEvent("message", ["discussion_id", $validatedRequest["discussion_id"]]);
+        DarkThunderRealtime::dispatchEvent("message", ["discussion_id"=> $validatedRequest["discussion_id"]]);
         return $savedMessage;
     }
 

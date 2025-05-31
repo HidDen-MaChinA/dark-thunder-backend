@@ -2,6 +2,8 @@
 
 namespace App\Http\DTOs\User;
 
+use GuzzleHttp\Psr7\MultipartStream;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Date;
 
 class CrupdateUser {
@@ -11,7 +13,7 @@ class CrupdateUser {
         public string $lastname,
         public string $username,
         public string $birthdate,
-        public string | null $pfp,
+        public UploadedFile | null $pfp,
         public string $email,
         public string $password
     ){ }

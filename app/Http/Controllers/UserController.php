@@ -9,6 +9,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use exception;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends BaseController
 {
@@ -48,6 +49,7 @@ class UserController extends BaseController
             $userPayload["email"],
             $userPayload["password"],
         );
+
         $this->userService->create($crupdateUser) ?  response()->json(["status" => "user created"]) : response()->json(["status" => "user could not be created"]);
     }
     public function update(Request $request)

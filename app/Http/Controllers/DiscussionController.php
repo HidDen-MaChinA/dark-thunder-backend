@@ -20,22 +20,29 @@ class DiscussionController extends Controller
     public function createDiscussion(Request $request){
         $validatedDiscussion = $request->validate([
             "name" => "required",
-            "message_restriction_regex" => "nullable"
+            "message_restriction_regex" => "nullable",
+            "image" => "file|nullable"
         ]);
-        $discussion = $this->discussionService->createDiscussion($validatedDiscussion["name"], $validatedDiscussion["message_restriction_regex"]);
+        if(!isset($validatedDiscussion["image"])) $validatedDiscussion["image"] = null;
+        $discussion = $this->discussionService->createDiscussion($validatedDiscussion["name"], $validatedDiscussion["message_restriction_regex"], $validatedDiscussion["image"]);
         return response()->json($discussion);
     }
 
     public function updateDiscussion(Request $request){
         $validatedDiscussion = $request->validate([
-            "name" => "required",
+            "name" => "nullable",
             "id" => "required",
-            "message_restriction_regex" => "nullable"
+            "message_restriction_regex" => "nullable",
+            "image"=>"nullable"
         ]);
+
+        if(!isset($validatedDiscussion["image"])) $validatedDiscussion["image"] = null;
+        if(!isset($validatedDiscussion["message_restriction_regex"])) $validatedDiscussion["message_restriction_regex"] = null;
         return $this->discussionService->updateDiscussion(
             $validatedDiscussion["name"],
             $validatedDiscussion["id"],
-            $validatedDiscussion["message_restriction_regex"]
+            $validatedDiscussion["message_restriction_regex"],
+            $validatedDiscussion["image"]
         );
     }
 

@@ -8,6 +8,7 @@ use App\Models\Discussion;
 use App\Models\Email;
 use App\Models\Friendship;
 use App\Models\User;
+use Carbon\Carbon;
 use DateTime;
 use exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -15,18 +16,37 @@ use Illuminate\Contracts\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder as DatabaseQueryBuilder;
+use Illuminate\Support\Facades\Storage;
 
 class UserService{
     public function __construct(
-        public UserMapper $userMapper
+        public UserMapper $userMapper,
+        public FileStorageService $fileStorageService
     ) { }
     public function create(CrupdateUser $crupdateUser){
         if(!$this->isEmailVerified($crupdateUser->email)){
             throw new exception("email not verified");
         }
-        $toSave = $this->userMapper->DTOCrupdateUserToEntity($crupdateUser);
-        $toSave->save();
-        return $toSave;
+        $filePath = null;
+        if($crupdateUser->pfp!=null){
+            $fileName = uuid_create() . ".jpg";
+            $filePath = $this->fileStorageService->saveFileAs($crupdateUser->pfp, $fileName, "profilePictures");
+        }
+        $pfpLink = request()->getSchemeAndHttpHost() . "/" . $filePath;
+        $attributes= [
+            "id"=>uuid_create(),
+            "firstname"=>$crupdateUser->firstname,
+            "lastname"=>$crupdateUser->lastname,
+            "username"=>$crupdateUser->username,
+            "email"=>$crupdateUser->email,
+            "password"=>$crupdateUser->password,
+            "birthdate"=>$crupdateUser->birthdate,
+            "pfp"=>$pfpLink,
+            "daily_discussions_token"=>uuid_create(),
+            "daily_discussions_token_creation_date"=>Carbon::now()->toDateTimeString()
+        ];
+        $saved = User::query()->create($attributes);
+        return $saved;
     }
 
     public function update(CrupdateUser $crupdateUser){
