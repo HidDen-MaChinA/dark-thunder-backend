@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Http\DarkThunderRealtime;
 use App\Http\WebSocket;
 use App\Models\Discussion;
 use App\Models\DiscussionsMembership;
@@ -18,13 +19,14 @@ class MessageService{
         if(!$this->isUserInDiscussion($currentUser->id, $discussionId)){
             throw new exception("user not in the discussion");
         }
-        $toSave = new Message([
+        $saved = Message::query()->create([
             'value' => $value,
             'user_id' => $currentUser->id,
             'discussion_id' => $discussionId,
         ]);
-        $toSave->save();
-        return $toSave;
+        $saved->load(["user", "discussion"]);
+        DarkThunderRealtime::dispatchEvent($saved);
+        return $saved;
     }
 
     public function deleteMessage($id){
