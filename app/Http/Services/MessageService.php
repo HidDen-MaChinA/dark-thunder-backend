@@ -24,8 +24,7 @@ class MessageService{
             'user_id' => $currentUser->id,
             'discussion_id' => $discussionId,
         ]);
-        $saved->load(["user", "discussion"]);
-        DarkThunderRealtime::dispatchEvent($saved);
+        DarkThunderRealtime::dispatchEvent(["event" => "message:" . $saved->discussion_id]);
         return $saved;
     }
 
